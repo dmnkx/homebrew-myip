@@ -6,7 +6,7 @@
 
 ## 설치
 
-첫 릴리스 태그(`v0.1.0`)가 올라간 뒤:
+릴리스 태그(`v0.1.3` 등)가 올라간 뒤:
 
 ```bash
 brew tap dmnkx/myip
@@ -25,20 +25,11 @@ myip --version
 
 ## 배포
 
-1. 버전을 올립니다.
+태그만 올리면 됩니다. 릴리스 CI가 `Cargo.toml`/`Cargo.lock` 버전을 태그(`v0.1.3` → `0.1.3`)에 맞춘 뒤 테스트하고 바이너리를 만듭니다. macOS Intel은 Apple Silicon 러너에서 `x86_64-apple-darwin`으로 교차 컴파일합니다.
 
 ```bash
-bash scripts/bump-version.sh 0.1.0
-git add Cargo.toml Cargo.lock
-git commit -m "chore: release 0.1.0"
-git push origin main
+git tag v0.1.3
+git push origin v0.1.3
 ```
 
-2. 태그를 올리면 테스트 통과 후 바이너리를 만듭니다. macOS Intel은 중단된 `macos-13` 대신 Apple Silicon 러너에서 `x86_64-apple-darwin`으로 교차 컴파일합니다.
-
-```bash
-git tag v0.1.0
-git push origin v0.1.0
-```
-
-`Cargo.toml`의 `version`과 태그(`v0.1.0`)는 같아야 합니다. `cargo test`가 실패하면 릴리스는 만들지 않습니다.
+`cargo test`가 실패하면 릴리스는 만들지 않습니다.

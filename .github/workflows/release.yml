@@ -20,6 +20,8 @@ jobs:
         with:
           ref: ${{ github.ref }}
       - uses: dtolnay/rust-toolchain@stable
+      - name: Sync crate version from tag
+        run: bash scripts/sync-version-from-tag.sh
       - name: Run tests
         run: cargo test --locked
 
@@ -45,6 +47,8 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
+      - name: Sync crate version from tag
+        run: bash scripts/sync-version-from-tag.sh
       - run: cargo test --locked
       - name: Package binary
         env:
@@ -65,6 +69,8 @@ jobs:
           ref: ${{ github.ref }}
 
       - uses: dtolnay/rust-toolchain@stable
+      - name: Sync crate version from tag
+        run: bash scripts/sync-version-from-tag.sh
       - run: cargo test --locked
       - run: bash scripts/package-source.sh
 
@@ -95,13 +101,14 @@ jobs:
           ) > dist/checksums.txt
           git fetch origin main
           git checkout main
+          bash scripts/sync-version-from-tag.sh
           python3 scripts/generate-formula.py "${version}" --checksums dist/checksums.txt --require-all
-          git add Formula/myip.rb
+          git add Formula/myip.rb Cargo.toml Cargo.lock
           if git diff --staged --quiet; then
-            echo "formula already up to date"
+            echo "formula and crate version already up to date"
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore: point Homebrew formula at ${GITHUB_REF_NAME} binaries"
+          git commit -m "chore: release ${GITHUB_REF_NAME} (formula + crate version)"
           git push origin main
