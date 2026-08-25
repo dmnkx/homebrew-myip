@@ -72,7 +72,7 @@
   <header>
     <a href="../index.html">목차로</a>
     <h1>대화 기록</h1>
-    <p class="meta">날짜: 2026-08-25 (화) · 최종 갱신: 오후 12:16 KST · 세션 ID: 1b11a20f-6651-41a4-9e8b-226249e5b946 · 저장소: homebrew-myip</p>
+    <p class="meta">날짜: 2026-08-25 (화) · 최종 갱신: 오후 1:39 KST · 세션 ID: 1b11a20f-6651-41a4-9e8b-226249e5b946 · 저장소: homebrew-myip</p>
   </header>
   <main>
     <article class="user">
@@ -278,6 +278,38 @@
         <li><code>scripts/sync-version-from-tag.sh</code> 추가</li>
         <li>Release의 test/build/release job 시작 시 동기화</li>
         <li>Formula 갱신 커밋에 crate 버전 파일 포함</li>
+      </ul>
+    </article>
+
+    <article class="user">
+      <div class="role">사용자</div>
+      <p>xcode-select --install 을 필요로 하는거 같아. 차라리 문서에 필요하다고 써줘</p>
+    </article>
+
+    <article class="assistant">
+      <div class="role">어시스턴트</div>
+      <p>CLT가 필요하다고 README와 Formula caveats에 적어 두었다. 설치 시 Rust가 필요 없다는 문구는 뺐다.</p>
+      <p>수행한 작업:</p>
+      <ul>
+        <li><code>README.md</code>에 <code>xcode-select --install</code> 요구 사항 섹션 추가</li>
+        <li><code>Formula/myip.rb</code> <code>caveats</code> — <code>brew install</code> 후 안내</li>
+        <li><code>scripts/generate-formula.py</code>도 같은 caveats를 넣도록 수정 (다음 릴리스에서도 유지)</li>
+      </ul>
+    </article>
+
+    <article class="user">
+      <div class="role">사용자</div>
+      <p>README.md 파일을 https://github.com/docker/docker-agent/blob/main/README.md 이런식으로 만들어줘. 그리고 기본을 영어로 작성해주고, 한국어 링크를 상단에 붙여서 한국어로도 볼 수 있게 해줘</p>
+    </article>
+
+    <article class="assistant">
+      <div class="role">어시스턴트</div>
+      <p>README를 docker-agent처럼 태그라인·기능·설치·빠른 시작 구조로 바꾸고, 기본은 영어, 상단에 한국어 링크를 달았다.</p>
+      <p>수행한 작업:</p>
+      <ul>
+        <li><code>README.md</code> — 영어. 상단 <code>Language: English | 한국어</code></li>
+        <li><code>README.ko.md</code> — 같은 목차의 한국어. 상단에서 영어로 돌아감</li>
+        <li>CLT(<code>xcode-select --install</code>), Homebrew 설치, 태그 릴리스 설명을 유지</li>
       </ul>
     </article>
   </main>

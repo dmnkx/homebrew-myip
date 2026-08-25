@@ -1,35 +1,81 @@
+**Language:** English | [한국어](README.ko.md)
+
 # myip
 
-로컬 IPv4와 공인 IPv4를 출력하는 CLI입니다. Homebrew 탭 `dmnkx/myip`로 배포합니다.
+> Print your local and public IPv4 addresses from the command line.
 
-설치 시 Rust나 Xcode Command Line Tools를 요구하지 않습니다. GitHub Release의 미리 빌드된 바이너리만 받습니다.
+`myip` is a small CLI. Run it with no arguments and it prints both addresses.
 
-## 설치
+```sh
+myip
+```
 
-릴리스 태그(`v0.1.3` 등)가 올라간 뒤:
+```text
+local: 192.168.x.x
+public: x.x.x.x
+```
 
-```bash
+## What is myip?
+
+`myip` reports the IPv4 address of the default network route and the public IPv4 address seen by the internet.
+
+It is distributed as a Homebrew tap (`dmnkx/myip`). Installs download a prebuilt binary from GitHub Releases.
+
+## Key Features
+
+- **Local and public IPv4** — prints both in one invocation
+- **Fallback lookups** — public IP is fetched from several endpoints if one fails
+- **Homebrew tap** — `brew tap dmnkx/myip && brew install myip`
+- **Tagged releases** — CI builds macOS (Apple Silicon and Intel) and Linux (arm and x86_64) binaries after tests pass
+
+## Requirements
+
+On macOS, **Xcode Command Line Tools** are required before Homebrew and this tap will install cleanly:
+
+```sh
+xcode-select --install
+```
+
+Confirm with `xcode-select -p`.
+
+## Install
+
+**Homebrew**
+
+```sh
 brew tap dmnkx/myip
 brew install myip
 ```
 
-## 사용
+**From source** (Rust toolchain required):
 
-```bash
+```sh
+cargo install --path .
+```
+
+Prebuilt archives are also on [GitHub Releases](https://github.com/dmnkx/homebrew-myip/releases).
+
+## Quick Start
+
+```sh
 myip
-# local: 192.168.x.x
-# public: x.x.x.x
-
 myip --version
+myip --help
 ```
 
-## 배포
+## Releasing
 
-태그만 올리면 됩니다. 릴리스 CI가 `Cargo.toml`/`Cargo.lock` 버전을 태그(`v0.1.3` → `0.1.3`)에 맞춘 뒤 테스트하고 바이너리를 만듭니다. macOS Intel은 Apple Silicon 러너에서 `x86_64-apple-darwin`으로 교차 컴파일합니다.
+Push a version tag. Release CI sets `Cargo.toml` / `Cargo.lock` to that tag (`v0.1.4` → `0.1.4`), runs tests, publishes binaries, and updates the Homebrew formula.
 
-```bash
-git tag v0.1.3
-git push origin v0.1.3
+Intel macOS binaries are cross-compiled as `x86_64-apple-darwin` on Apple Silicon runners.
+
+```sh
+git tag v0.1.4
+git push origin v0.1.4
 ```
 
-`cargo test`가 실패하면 릴리스는 만들지 않습니다.
+Releases are not published if `cargo test` fails.
+
+## License
+
+[MIT](LICENSE)

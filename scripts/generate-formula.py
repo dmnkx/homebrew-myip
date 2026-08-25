@@ -79,6 +79,14 @@ def render(version: str, hashes: dict[str, str]) -> str:
     bin.install "myip"
   end
 
+  def caveats
+    <<~EOS
+      macOS에서 Homebrew로 설치하려면 Xcode Command Line Tools가 필요합니다:
+
+        xcode-select --install
+    EOS
+  end
+
   test do
     assert_match(/myip \\d+\\.\\d+\\.\\d+/, shell_output("#{{bin}}/myip --version"))
   end
