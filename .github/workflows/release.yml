@@ -1,0 +1,52 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          ref: ${{ github.ref }}
+
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test --locked
+      - run: cargo build --release --locked
+      - run: bash scripts/package-source.sh
+
+      - name: Create GitHub Release
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          gh release create "${GITHUB_REF_NAME}" \
+            "dist/myip-${version}.tar.gz" \
+            --title "${GITHUB_REF_NAME}" \
+            --generate-notes
+
+      - name: Point formula at the release tarball
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          version="${GITHUB_REF_NAME#v}"
+          sha256="$(sha256sum "dist/myip-${version}.tar.gz" | awk '{print $1}')"
+          git fetch origin main
+          git checkout main
+          bash scripts/update-formula.sh "${version}" "${sha256}"
+          git add Formula/myip.rb
+          if git diff --staged --quiet; then
+            echo "formula already up to date"
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git commit -m "chore: point Homebrew formula at ${GITHUB_REF_NAME}"
+          git push origin main
