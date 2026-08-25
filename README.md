@@ -2,14 +2,11 @@
 
 로컬 IPv4와 공인 IPv4를 출력하는 CLI입니다. Homebrew 탭 `dmnkx/myip`로 배포합니다.
 
+설치 시 Rust나 Xcode Command Line Tools를 요구하지 않습니다. GitHub Release의 미리 빌드된 바이너리만 받습니다.
+
 ## 설치
 
-```bash
-brew tap dmnkx/myip
-brew install --HEAD myip
-```
-
-첫 릴리스(`v0.1.0` 태그) 이후에는 `--HEAD` 없이 설치할 수 있습니다.
+첫 릴리스 태그(`v0.1.0`)가 올라간 뒤:
 
 ```bash
 brew tap dmnkx/myip
@@ -37,11 +34,11 @@ git commit -m "chore: release 0.1.0"
 git push origin main
 ```
 
-2. 태그를 올리면 GitHub Actions가 소스 tar.gz 릴리스를 만들고 `Formula/myip.rb`의 `url`/`sha256`을 `main`에 커밋합니다.
+2. 태그를 올리면 테스트 통과 후 macOS(arm/intel)·Linux(arm/intel) 바이너리를 만들고 Formula를 갱신합니다.
 
 ```bash
 git tag v0.1.0
 git push origin v0.1.0
 ```
 
-`Cargo.toml`의 `version`과 태그(`v0.1.0`)는 같아야 합니다.
+`Cargo.toml`의 `version`과 태그(`v0.1.0`)는 같아야 합니다. `cargo test`가 실패하면 릴리스는 만들지 않습니다.
