@@ -72,7 +72,7 @@
   <header>
     <a href="../index.html">목차로</a>
     <h1>대화 기록</h1>
-    <p class="meta">날짜: 2026-08-25 (화) · 최종 갱신: 오후 12:01 KST · 세션 ID: 1b11a20f-6651-41a4-9e8b-226249e5b946 · 저장소: homebrew-myip</p>
+    <p class="meta">날짜: 2026-08-25 (화) · 최종 갱신: 오후 12:11 KST · 세션 ID: 1b11a20f-6651-41a4-9e8b-226249e5b946 · 저장소: homebrew-myip</p>
   </header>
   <main>
     <article class="user">
@@ -230,6 +230,22 @@
       <ul>
         <li>충돌 구간(<code>HEAD</code>의 소스 tar.gz + <code>depends_on "rust"</code> vs 플랫폼별 바이너리 URL)을 바이너리 설치 쪽으로 해소.</li>
         <li><code>bin.install "myip"</code>와 <code>--version</code> 테스트만 유지.</li>
+      </ul>
+    </article>
+
+    <article class="user">
+      <div class="role">사용자</div>
+      <p>macos-13이 빌드가 안돼</p>
+    </article>
+
+    <article class="assistant">
+      <div class="role">어시스턴트</div>
+      <p><code>macos-13</code> GitHub 러너는 2025년 12월에 종료되어 잡이 바로 실패한다. 해당 러너를 제거하고 Apple Silicon 러너에서 Intel 맥 바이너리를 교차 컴파일하도록 바꿨다.</p>
+      <p>수행한 작업:</p>
+      <ul>
+        <li><code>.github/workflows/release.yml</code> — <code>macos-13</code> 삭제. <code>macos-latest</code>에서 <code>aarch64-apple-darwin</code>과 <code>x86_64-apple-darwin</code>을 빌드.</li>
+        <li><code>scripts/package-binary.sh</code> — <code>TARGET</code>으로 트리플을 받아 <code>cargo build --target</code>.</li>
+        <li>Linux는 기존처럼 <code>ubuntu-latest</code> / <code>ubuntu-24.04-arm</code>.</li>
       </ul>
     </article>
   </main>

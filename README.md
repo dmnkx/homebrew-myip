@@ -34,7 +34,7 @@ git commit -m "chore: release 0.1.0"
 git push origin main
 ```
 
-2. 태그를 올리면 테스트 통과 후 macOS(arm/intel)·Linux(arm/intel) 바이너리를 만들고 Formula를 갱신합니다.
+2. 태그를 올리면 테스트 통과 후 바이너리를 만듭니다. macOS Intel은 중단된 `macos-13` 대신 Apple Silicon 러너에서 `x86_64-apple-darwin`으로 교차 컴파일합니다.
 
 ```bash
 git tag v0.1.0

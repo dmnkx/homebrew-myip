@@ -6,9 +6,10 @@ cd "$root"
 
 version="$(sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml | head -n 1)"
 host="$(rustc -vV | awk '/^host:/{print $2}')"
-bin="target/release/myip"
+target="${TARGET:-${host}}"
+bin="target/${target}/release/myip"
 
-cargo build --release --locked
+cargo build --release --locked --target "${target}"
 
 if [[ "$(uname -s)" == Darwin ]]; then
   strip -x "${bin}"
@@ -17,6 +18,6 @@ else
 fi
 
 mkdir -p dist
-asset="myip-${version}-${host}.tar.gz"
-tar -czf "dist/${asset}" -C target/release myip
+asset="myip-${version}-${target}.tar.gz"
+tar -czf "dist/${asset}" -C "target/${target}/release" myip
 echo "wrote dist/${asset}"
