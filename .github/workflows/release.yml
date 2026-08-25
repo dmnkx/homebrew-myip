@@ -9,7 +9,45 @@ permissions:
   contents: write
 
 jobs:
+  test:
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Run tests
+        run: cargo test --locked
+
+  build:
+    needs: test
+    strategy:
+      fail-fast: true
+      matrix:
+        os:
+          - macos-14
+          - macos-13
+          - ubuntu-latest
+          - ubuntu-24.04-arm
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.ref }}
+      - uses: dtolnay/rust-toolchain@stable
+      - run: cargo test --locked
+      - run: bash scripts/package-binary.sh
+      - uses: actions/upload-artifact@v4
+        with:
+          name: binary-${{ matrix.os }}
+          path: dist/*.tar.gz
+
   release:
+    needs: [test, build]
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -19,28 +57,36 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
       - run: cargo test --locked
-      - run: cargo build --release --locked
       - run: bash scripts/package-source.sh
+
+      - uses: actions/download-artifact@v4
+        with:
+          path: dist
+          merge-multiple: true
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           version="${GITHUB_REF_NAME#v}"
-          gh release create "${GITHUB_REF_NAME}" \
-            "dist/myip-${version}.tar.gz" \
+          shopt -s nullglob
+          assets=(dist/myip-"${version}"-*.tar.gz dist/myip-"${version}".tar.gz)
+          gh release create "${GITHUB_REF_NAME}" "${assets[@]}" \
             --title "${GITHUB_REF_NAME}" \
             --generate-notes
 
-      - name: Point formula at the release tarball
+      - name: Point formula at prebuilt binaries
         env:
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           version="${GITHUB_REF_NAME#v}"
-          sha256="$(sha256sum "dist/myip-${version}.tar.gz" | awk '{print $1}')"
+          (
+            cd dist
+            sha256sum myip-"${version}"-*.tar.gz
+          ) > dist/checksums.txt
           git fetch origin main
           git checkout main
-          bash scripts/update-formula.sh "${version}" "${sha256}"
+          python3 scripts/generate-formula.py "${version}" --checksums dist/checksums.txt --require-all
           git add Formula/myip.rb
           if git diff --staged --quiet; then
             echo "formula already up to date"
@@ -48,5 +94,5 @@ jobs:
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git commit -m "chore: point Homebrew formula at ${GITHUB_REF_NAME}"
+          git commit -m "chore: point Homebrew formula at ${GITHUB_REF_NAME} binaries"
           git push origin main

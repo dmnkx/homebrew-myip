@@ -7,19 +7,14 @@ on:
 
 jobs:
   rust:
-    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: true
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@stable
-      - run: cargo test --locked
+      - name: Run tests
+        run: cargo test --locked
       - run: cargo build --release --locked
-      - run: cargo run --locked -- --version
-
-  formula:
-    runs-on: macos-latest
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install formula from HEAD
-        run: brew install --HEAD --formula ./Formula/myip.rb
-      - name: Test formula
-        run: brew test myip

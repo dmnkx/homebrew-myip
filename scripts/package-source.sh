@@ -19,6 +19,9 @@ if [[ -n "${GITHUB_REF_NAME:-}" && "${GITHUB_REF_NAME}" == v* ]]; then
 fi
 
 name="myip-${version}"
+
+cargo test --locked
+
 stage="$(mktemp -d)"
 trap 'rm -rf "${stage}"' EXIT
 
